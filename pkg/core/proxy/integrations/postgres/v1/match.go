@@ -381,6 +381,12 @@ func findPGStreamMatch(tcsMocks []*models.Mock, requestBuffers [][]byte, logger 
 	match := false
 	// loop for the exact match of the request
 	for idx, mock := range tcsMocks {
+		// BUG FIX #2706: Skip mocks that are not properly filtered (should only use filtered mocks)
+		if !mock.TestModeInfo.IsFiltered {
+			logger.Debug("Skipping unfiltered mock", zap.String("mockName", mock.Name))
+			continue
+		}
+		
 		// merging the mocks as well before comparing
 		mock.Spec.PostgresRequests = mergeMocks(mock.Spec.PostgresRequests, logger)
 
@@ -408,6 +414,12 @@ func findPGStreamMatch(tcsMocks []*models.Mock, requestBuffers [][]byte, logger 
 	// loop for the ps match of the request
 	if !match {
 		for idx, mock := range tcsMocks {
+			// BUG FIX #2706: Skip mocks that are not properly filtered (should only use filtered mocks)
+			if !mock.TestModeInfo.IsFiltered {
+				logger.Debug("Skipping unfiltered mock in PS match", zap.String("mockName", mock.Name))
+				continue
+			}
+			
 			// merging the mocks as well before comparing
 			mock.Spec.PostgresRequests = mergeMocks(mock.Spec.PostgresRequests, logger)
 
@@ -441,6 +453,12 @@ func findPGStreamMatch(tcsMocks []*models.Mock, requestBuffers [][]byte, logger 
 	if !match {
 
 		for idx, mock := range tcsMocks {
+			// BUG FIX #2706: Skip mocks that are not properly filtered (should only use filtered mocks)
+			if !mock.TestModeInfo.IsFiltered {
+				logger.Debug("Skipping unfiltered mock in fallback match", zap.String("mockName", mock.Name))
+				continue
+			}
+			
 			// merging the mocks as well before comparing
 			mock.Spec.PostgresRequests = mergeMocks(mock.Spec.PostgresRequests, logger)
 
